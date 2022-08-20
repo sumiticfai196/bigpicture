@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  build-and-deploy:
     runs-on: windows-latest
 
     steps:
@@ -21,23 +21,23 @@ jobs:
         with:
           dotnet-version: '7.0.100-preview.5.22307.18'
           include-prerelease: true
+          
+      - name: Setup Node
+        uses: actions/setup-node@v1
+         with:
+         node-version: 10.16.3    
 
-    - name: Setup Node
-      uses: actions/setup-node@v1
-      with:
-        node-version: 10.16.3    
+      - name: Install dependencies in client app
+        working-directory: TailwindTraders.Website/Source/Tailwind.Traders.Web/ClientApp
+        run: npm install
 
-    - name: Install dependencies in client app
-      working-directory: TailwindTraders.Website/Source/Tailwind.Traders.Web/ClientApp
-      run: npm install
+      - name: Build and publish with dotnet
+        working-directory: TailwindTraders.Website/Source/Tailwind.Traders.Web
+        run: |
+         dotnet build --configuration Release
+         dotnet publish -c Release -o publish
 
-    - name: Build and publish with dotnet
-      working-directory: TailwindTraders.Website/Source/Tailwind.Traders.Web
-      run: |
-        dotnet build --configuration Release
-        dotnet publish -c Release -o publish
-
-    - name: Upload artifact for deployment job
+      - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v2
         with:
           name: .net-app
