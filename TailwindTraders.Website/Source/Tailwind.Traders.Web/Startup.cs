@@ -8,6 +8,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Tailwind.Traders.Web.Standalone;
 
+//Code Commit
+
 namespace Tailwind.Traders.Web
 {
     public class Startup
