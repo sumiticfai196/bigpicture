@@ -22,13 +22,22 @@ jobs:
           dotnet-version: '7.0.100-preview.5.22307.18'
           include-prerelease: true
 
-      - name: Build with dotnet
-        run: dotnet build --configuration Release
+    - name: Setup Node
+      uses: actions/setup-node@v1
+      with:
+        node-version: 10.16.3    
 
-      - name: dotnet publish
-        run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp
+    - name: Install dependencies in client app
+      working-directory: TailwindTraders.Website/Source/Tailwind.Traders.Web/ClientApp
+      run: npm install
 
-      - name: Upload artifact for deployment job
+    - name: Build and publish with dotnet
+      working-directory: TailwindTraders.Website/Source/Tailwind.Traders.Web
+      run: |
+        dotnet build --configuration Release
+        dotnet publish -c Release -o publish
+
+    - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v2
         with:
           name: .net-app
@@ -54,4 +63,4 @@ jobs:
           app-name: 'bigpicture121'
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_6EE3B7D84CDB49A18580A0653BD05462 }}
-          package: .
+          package: TailwindTraders.Website/Source/Tailwind.Traders.Web/publish
