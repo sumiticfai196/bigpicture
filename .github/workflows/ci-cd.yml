@@ -24,7 +24,7 @@ jobs:
           
       - name: Setup Node
         uses: actions/setup-node@v1
-         with:
+        with:
          node-version: 10.16.3    
 
       - name: Install dependencies in client app
@@ -36,31 +36,13 @@ jobs:
         run: |
          dotnet build --configuration Release
          dotnet publish -c Release -o publish
-
-      - name: Upload artifact for deployment job
-        uses: actions/upload-artifact@v2
-        with:
-          name: .net-app
-          path: ${{env.DOTNET_ROOT}}/myapp
-
-  deploy:
-    runs-on: windows-latest
-    needs: build
-    environment:
-      name: 'Production'
-      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
-
-    steps:
-      - name: Download artifact from build job
-        uses: actions/download-artifact@v2
-        with:
-          name: .net-app
-
-      - name: Deploy to Azure Web App
-        id: deploy-to-webapp
+         
+      - name: Run Azure webapp deploy action using publish profile credentials
         uses: azure/webapps-deploy@v2
         with:
-          app-name: 'bigpicture121'
-          slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_6EE3B7D84CDB49A18580A0653BD05462 }}
-          package: TailwindTraders.Website/Source/Tailwind.Traders.Web/publish
+         app-name: bigpicture
+         slot-name: Production
+         publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_6EE3B7D84CDB49A18580A0653BD05462 }}
+         package: TailwindTraders.Website/Source/Tailwind.Traders.Web/publish
+
+ 
